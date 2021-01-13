@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  php:
+    container_name: php-fpm
+    build: ./php-fpm
+    networks:
+      - php-dev-network
+    volumes:
+      - ./project/:/var/www/
+networks:
+  php-dev-network:
