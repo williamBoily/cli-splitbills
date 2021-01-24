@@ -17,8 +17,13 @@ class TransactionReader
 	public function getTransactions(){
 		$files = scandir($this->directory, SCANDIR_SORT_DESCENDING);
 	
-		unset($files[array_search('.', $files)]);
-		unset($files[array_search('..', $files)]);
+		$extension = '.txt';
+		$offset = strlen($extension);
+		foreach ($files as $key => $file) {
+			if($extension !== substr($file, -$offset)){
+				unset($files[$key]);
+			}
+		}
 	
 		$file = reset($files);
 		$transactions = [];
