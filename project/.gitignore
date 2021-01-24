@@ -1,1 +1,8 @@
 vendor
+.env
+service_account_credentials.json
+
+# ignore all fileds in the folder but add a .gitkeep file so
+# the folder can be commited
+transactions/*
+!transactions/.gitkeep 

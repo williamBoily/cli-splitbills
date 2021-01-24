@@ -1,5 +1,10 @@
 {
+    "autoload": {
+        "psr-4": {"Splitbills\\": "src/"}
+    },
     "require": {
-        
+        "monolog/monolog": "2.*",
+        "google/apiclient": "^2.0",
+        "vlucas/phpdotenv": "^5.3"
     }
 }
