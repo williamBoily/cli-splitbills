@@ -5,6 +5,8 @@ namespace Splitbills;
 use DateTimeImmutable;
 use DateTimeZone;
 
+use Splitbills\DateRangeInterface;
+
 class TransactionReader
 {
 	protected $directory;
@@ -14,7 +16,7 @@ class TransactionReader
 		$this->directory = $directory;
 	}
 
-	public function getTransactions(){
+	public function getTransactions(DateRangeInterface $date_range){
 		$files = scandir($this->directory, SCANDIR_SORT_DESCENDING);
 	
 		$extension = '.txt';
@@ -47,8 +49,11 @@ class TransactionReader
 				$parts = preg_split('/\t+/', $line);
 				$amount = $this->convert_string_amount_to_float($parts[4]);
 				$date = DateTimeImmutable::createFromFormat('j M Y', $parts[0], new DateTimeZone("-0500"));
+
+				if($date_range->isInRange($date)){
+					$transactions[] = new Transaction($amount, $date, $parts[3]);
+				}
 	
-				$transactions[] = new Transaction($amount, $date, $parts[3]);
 			}
 		}
 		fclose($fn);
