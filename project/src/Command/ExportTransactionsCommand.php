@@ -41,7 +41,7 @@ class ExportTransactionsCommand extends Command
 		//->addArgument('password', $this->requirePassword ? InputArgument::REQUIRED : InputArgument::OPTIONAL, 'User password')
 		//->addArgument('clear', InputArgument::OPTIONAL, 'Clear existing Transactions in destination before exporting')
 		->addOption('clear', 'c', InputOption::VALUE_NONE, 'Clear existing transactions from destination before exporting')
-		->addOption('date-range', '-d', InputOption::VALUE_REQUIRED, 'Transactions only form this Date range will be exported to YYYY/MM/DD-YYYY/MM/DD')
+		->addOption('date-range', 'd', InputOption::VALUE_REQUIRED, 'Transactions only form this Date range will be exported to YYYY/MM/DD-YYYY/MM/DD')
 		;
 	}
 
@@ -56,12 +56,12 @@ class ExportTransactionsCommand extends Command
 		$clearExistingData = (null === $input->getOption('clear'));
 		$date_range = new NoDateRange();
 		if(null !== $date_range_input = $input->getOption('date-range')){
-			if(1 === preg_match('/[\d]{4}\/[\d]{2}\/[\d]{2}-[\d]{4}\/[\d]{2}\/[\d]{2}/', $date_range_input, $matches)){
+			if(1 === preg_match('/([\d]{4}\/[\d]{2}\/[\d]{2})-([\d]{4}\/[\d]{2}\/[\d]{2})/', $date_range_input, $matches)){
 				$range_start = $matches[1];
 				$range_end = $matches[2];
 				//YYYY/MM/DD
-				$range_start = \DateTime::createFromFormat('Y/j/n', $range_start, new \DateTimeZone('-0500'));
-				$range_end = \DateTime::createFromFormat('Y/j/n', $range_end, new \DateTimeZone('-0500'));
+				$range_start = \DateTime::createFromFormat('Y/m/d|', $range_start, new \DateTimeZone('-0500'));
+				$range_end = \DateTime::createFromFormat('Y/m/d|', $range_end, new \DateTimeZone('-0500'));
 				$date_range = new DateRange($range_start, $range_end);
 			}
 		}
@@ -69,7 +69,7 @@ class ExportTransactionsCommand extends Command
 		try {
 			$transactionReader = new TransactionReader($project_path . '/transactions');
 			$transactions = $transactionReader->getTransactions($date_range);
-	
+
 			$google_auth_config = json_decode(file_get_contents($project_path . '/config/service_account_credentials.json'), true);
 			$sheet_API = new GoogleSheetAPI($google_auth_config);
 			$sheet_API->write_transactions($transactions, $sheet_id, $range, $clearExistingData);

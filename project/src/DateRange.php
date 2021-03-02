@@ -7,10 +7,13 @@ class DateRange implements DateRangeInterface
 	public $start;
 	public $end;
 
-	public function __construct(\DateTimeInterface $start, \DateTimeInterface $end)
+	public function __construct(\DateTime $start, \DateTime $end)
 	{
-		$this->start = \DateTimeImmutable::createFromInterface($start);
-		$this->$end = \DateTimeImmutable::createFromInterface($end);
+		// php 8.0 only
+		// $this->start = \DateTimeImmutable::createFromInterface($start);
+		// $this->$end = \DateTimeImmutable::createFromInterface($end);
+		$this->start = \DateTimeImmutable::createFromMutable($start);
+		$this->end = \DateTimeImmutable::createFromMutable($end);
 	}
 
 	/**
@@ -25,6 +28,6 @@ class DateRange implements DateRangeInterface
 	 */
 	public function isInRange(\DateTimeInterface $date) : bool
 	{
-		return ($date >= $this->start && $date < $this->end);
+		return ($date->getTimestamp() >= $this->start->getTimestamp() && $date->getTimestamp() < $this->end->getTimestamp());
 	}
 }

@@ -48,7 +48,8 @@ class TransactionReader
 				
 				$parts = preg_split('/\t+/', $line);
 				$amount = $this->convert_string_amount_to_float($parts[4]);
-				$date = DateTimeImmutable::createFromFormat('j M Y', $parts[0], new DateTimeZone("-0500"));
+				// '|' will set the year, month and day to the information found in the string to parse, and sets the hour, minute and second to 0.
+				$date = DateTimeImmutable::createFromFormat('j M Y|', $parts[0], new DateTimeZone("-0500"));
 
 				if($date_range->isInRange($date)){
 					$transactions[] = new Transaction($amount, $date, $parts[3]);
